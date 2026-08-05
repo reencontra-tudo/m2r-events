@@ -3,4 +3,5 @@
 // conhecidos. Cada produto grava eventos no formato abaixo na sua PRÓPRIA
 // tabela `events` — não existe (ainda) um coletor central. Quando a camada
 // M2R Intelligence existir, esse formato é o que ela vai consumir.
+const _typeCoverageCheck = [true, true];
 export {};

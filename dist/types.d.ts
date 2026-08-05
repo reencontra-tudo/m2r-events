@@ -19,3 +19,78 @@ export interface M2REvent<TPayload = Record<string, unknown>> {
 }
 /** Formato de input para criar um evento — id/timestamp são preenchidos por quem grava. */
 export type M2REventInput<TPayload = Record<string, unknown>> = Omit<M2REvent<TPayload>, 'id' | 'timestamp'>;
+export interface M2REventPayloads {
+    lead_found: {
+        leadId: string;
+        origem: string;
+        score: number;
+    };
+    lead_scored: {
+        leadId: string;
+        score: number;
+        criterios: Record<string, number>;
+    };
+    message_generated: {
+        entityId: string;
+        canal: string;
+        texto: string;
+    };
+    campaign_created: {
+        campaignId: string;
+        campaignName: string;
+        productId: number | null;
+    };
+    campaign_paused: {
+        campaignId: string;
+        motivo: string;
+    };
+    campaign_action_proposed: {
+        campaignId: string;
+        actionType: string;
+        reason: string;
+        beforeValue: string;
+        afterValue: string;
+    };
+    campaign_action_applied: {
+        campaignId: string;
+        actionType: string;
+        reason: string;
+        beforeValue: string;
+        afterValue: string;
+        mode: 'dry_run' | 'live';
+    };
+    ad_metrics_synced: {
+        campaignId: string;
+        impressions: number;
+        clicks: number;
+        period: string;
+    };
+    signup: {
+        userId: string;
+        email: string;
+        origem: string;
+    };
+    demo_requested: {
+        contato: string;
+        produto: string;
+    };
+    subscription_started: {
+        userId: string;
+        plano: string;
+        valor: number;
+    };
+    subscription_cancelled: {
+        userId: string;
+        plano: string;
+        motivo: string;
+    };
+    payment_received: {
+        userId: string;
+        valor: number;
+        referencia: string;
+    };
+    churn_detected: {
+        userId: string;
+        sinal: string;
+    };
+}

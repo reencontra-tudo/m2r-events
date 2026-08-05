@@ -48,3 +48,48 @@ export interface M2REvent<TPayload = Record<string, unknown>> {
 
 /** Formato de input para criar um evento — id/timestamp são preenchidos por quem grava. */
 export type M2REventInput<TPayload = Record<string, unknown>> = Omit<M2REvent<TPayload>, 'id' | 'timestamp'>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Payloads tipados por tipo de evento — espelha a tabela "Tipos de evento" do
+// EVENTS.md. Puramente aditivo: `M2REvent`/`M2REventInput` acima continuam
+// genéricos sobre TPayload (compatibilidade com quem já consome o pacote,
+// ex. M2RAds hoje). Quem quiser o payload tipado por evento pode usar
+// `M2REvent<M2REventPayloads['campaign_paused']>` — opt-in, não obrigatório.
+// Adicionar um evento novo = adicionar aqui, em M2REventType, e no EVENTS.md.
+// ─────────────────────────────────────────────────────────────────────────────
+export interface M2REventPayloads {
+  lead_found: { leadId: string; origem: string; score: number };
+  lead_scored: { leadId: string; score: number; criterios: Record<string, number> };
+  message_generated: { entityId: string; canal: string; texto: string };
+  campaign_created: { campaignId: string; campaignName: string; productId: number | null };
+  campaign_paused: { campaignId: string; motivo: string };
+  campaign_action_proposed: {
+    campaignId: string;
+    actionType: string;
+    reason: string;
+    beforeValue: string;
+    afterValue: string;
+  };
+  campaign_action_applied: {
+    campaignId: string;
+    actionType: string;
+    reason: string;
+    beforeValue: string;
+    afterValue: string;
+    mode: 'dry_run' | 'live';
+  };
+  ad_metrics_synced: { campaignId: string; impressions: number; clicks: number; period: string };
+  signup: { userId: string; email: string; origem: string };
+  demo_requested: { contato: string; produto: string };
+  subscription_started: { userId: string; plano: string; valor: number };
+  subscription_cancelled: { userId: string; plano: string; motivo: string };
+  payment_received: { userId: string; valor: number; referencia: string };
+  churn_detected: { userId: string; sinal: string };
+}
+
+// Checagem em tempo de compilação: todo M2REventType tem uma entrada em
+// M2REventPayloads e vice-versa. Se um dia divergir, esta linha quebra o
+// build do pacote em vez de divergir silenciosamente.
+type _AssertPayloadsCoverAllTypes = M2REventType extends keyof M2REventPayloads ? true : never;
+type _AssertTypesCoverAllPayloads = keyof M2REventPayloads extends M2REventType ? true : never;
+const _typeCoverageCheck: [_AssertPayloadsCoverAllTypes, _AssertTypesCoverAllPayloads] = [true, true];

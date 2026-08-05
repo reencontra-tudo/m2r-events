@@ -1,6 +1,6 @@
 {
   "name": "m2r-events",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Schema de eventos padronizado compartilhado entre produtos M2RPrime",
   "type": "module",
   "main": "./dist/index.js",
@@ -9,6 +9,7 @@
     "build": "tsc"
   },
   "devDependencies": {
+    "@types/node": "^26.1.2",
     "typescript": "^5.7.3"
   }
 }
