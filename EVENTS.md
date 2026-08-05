@@ -92,3 +92,15 @@ Envelope (Seção 3) e tipos de evento (Seção 4) já estavam definidos desde a
 esta rodada formalizou o que faltava: payload tipado por evento (antes só documentado em prosa
 na tabela da Seção 4), validação em runtime pra consumidores fora do type-checker do TypeScript,
 e geração consistente de `id`/`timestamp`. Tudo aditivo, sem quebrar a API existente — ver Seção 5.
+
+### 05/08/2026 — repositório tornado público
+Descoberto durante o primeiro deploy real do M2RAds (Railway): `"m2r-events": "github:..."`
+como dependência git de repo **privado** funciona em dev local (ambiente já tem SSH/git
+configurado) mas quebra em qualquer build limpo — `npm install` tenta `ssh://git@github.com/...`,
+e containers de build (Railway, GitHub Actions, etc.) não têm SSH nem credencial pra dependências
+git arbitrárias do `package.json`. Como o pacote não tem nenhum conteúdo sensível (só schema,
+tipos, validação — feito pra ser consumido por todo produto M2RPrime sem fricção, que era o
+objetivo desde a criação), a correção foi tornar o repositório público em vez de configurar um
+token de leitura por produto. Resolve de vez pra qualquer produto que for adicionar essa
+dependência no futuro, não só o M2RAds. Detalhe técnico completo em `M2RADS.md`
+(achado técnico #8, sessão 3).
