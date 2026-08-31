@@ -1,14 +1,14 @@
 # EVENTS.md — Schema de Eventos M2RPrime
 
-**Última atualização: 05/08/2026 (v0.2.0)**
+**Última atualização: 31/08/2026 (v0.3.0)**
 
 > Fonte única de verdade do formato de eventos entre produtos M2RPrime.
 > Os tipos TypeScript em `src/types.ts` são a implementação; este arquivo é a referência de uso.
 
 ## 1. Contexto
 
-Cada produto M2RPrime (Backfindr, M2RLeads, M2RMenu, M2RFood, M2RAds) é um repositório
-independente — não existe monorepo. Este pacote (`m2r-events`) padroniza o **formato** dos
+Cada produto M2RPrime (Backfindr, M2RLeads, M2RMenu, M2RFood, M2RAds, M2RPlace, Jack Chicken)
+é um repositório independente — não existe monorepo. Este pacote (`m2r-events`) padroniza o **formato** dos
 eventos que cada produto emite, para que uma futura camada central (provisoriamente chamada
 **M2R Intelligence**) consiga consumi-los de forma consistente quando existir.
 
@@ -32,7 +32,7 @@ Como não há registry privado configurado, os produtos consomem via dependênci
 interface M2REvent {
   id: string;                 // UUID
   type: M2REventType;         // ver tabela abaixo
-  product: M2RProduct;        // 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads'
+  product: M2RProduct;        // 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads' | 'm2rplace' | 'jack_chicken'
   timestamp: string;          // ISO 8601
   entityType?: string;        // 'campaign' | 'lead' | 'user' | ...
   entityId?: string;
@@ -55,6 +55,12 @@ interface M2REvent {
 | `campaign_action_proposed` | M2RAds | Bot decidiu uma ação mas ela está pendente de aprovação manual | `{ campaignId, actionType, reason, beforeValue, afterValue }` |
 | `campaign_action_applied` | M2RAds | Ação aplicada de verdade (auto ou aprovada manualmente) | `{ campaignId, actionType, reason, beforeValue, afterValue, mode }` |
 | `ad_metrics_synced` | M2RAds | Sincronização periódica de métricas (impressões/cliques) — agregado, não evento por clique individual | `{ campaignId, impressions, clicks, period }` |
+| `media_generated` | m2r-media | Asset de mídia criado (IA ou upload manual), status inicial `generated` | `{ mediaAssetId, productSlug, personaSlug, category, mediaType, generationSource }` |
+| `media_approved` | m2r-media | Curadoria (humana ou automática, quando `requires_approval=false`) aprova o asset | `{ mediaAssetId, approvedBy }` |
+| `media_rejected` | m2r-media | Curadoria rejeita o asset | `{ mediaAssetId, rejectedBy, motivo }` |
+| `media_published` | m2r-media | Um alvo de publicação (`media_target`) específico é publicado — um evento por alvo, não por asset | `{ mediaAssetId, mediaTargetId, platform, accountRef, externalPostId }` |
+| `media_publish_failed` | m2r-media | Publicação falha num alvo | `{ mediaAssetId, mediaTargetId, platform, motivo }` |
+| `media_engagement_synced` | m2r-media | Sincronização periódica de métricas de engajamento por alvo — agregado, não evento por interação individual | `{ mediaTargetId, platform, impressions, reach, likes, comments, shares, clicks, periodStart, periodEnd }` |
 | `signup` | todos | Novo usuário/cliente cadastrado | `{ userId, email, origem }` |
 | `demo_requested` | todos | Pedido de demonstração | `{ contato, produto }` |
 | `subscription_started` | todos | Assinatura paga iniciada | `{ userId, plano, valor }` |
@@ -72,13 +78,15 @@ Além do envelope genérico da Seção 3, o pacote agora exporta:
 
 **Nenhuma integração de produto foi feita nesta rodada** — isso é só a formalização da estrutura no pacote, conforme decidido em 05/08/2026. M2RAds continua consumindo só `M2REventType`/`M2REventInput` como antes; adotar os novos exports é decisão futura, produto a produto.
 
-## 6. Nota sobre `ad_metrics_synced`
+## 6. Nota sobre `ad_metrics_synced` e `media_engagement_synced`
 
 Não existe `ad_clicked` (evento por clique individual) porque a Google Ads API não notifica
 cliques em tempo real — só expõe métricas agregadas por período via consulta. O nome reflete
 isso: é uma sincronização periódica, não um webhook de clique. Evitar nomear eventos de um jeito
 que sugira granularidade/tempo-real que a fonte de dados não tem (ver princípios de
-`BACKFINDR_INTELLIGENCE.md` — nunca inventar dados).
+`BACKFINDR_INTELLIGENCE.md` — nunca inventar dados). `media_engagement_synced` segue o mesmo
+princípio (renomeado de `media_engagement_recorded` na proposta original) — nenhuma plataforma
+de mídia social dá engajamento em tempo real por interação, só agregado por período.
 
 ## 7. Log de decisões
 
@@ -104,3 +112,22 @@ objetivo desde a criação), a correção foi tornar o repositório público em 
 token de leitura por produto. Resolve de vez pra qualquer produto que for adicionar essa
 dependência no futuro, não só o M2RAds. Detalhe técnico completo em `M2RADS.md`
 (achado técnico #8, sessão 3).
+
+### 31/08/2026 — v0.3.0: Central de Mídia (m2r-media) — `m2rplace` + `jack_chicken` como produtos, 6 eventos de mídia
+
+Motivado pela proposta de "Central de Mídia" compartilhada entre produtos M2RPrime (design
+completo em `m2rintelligence/docs/media_hub_proposal.md`, aprovado por Marcos em 30/08/2026),
+que generaliza o motor n8n do AutoPost do Backfindr (hoje hardcoded pra Facebook/Instagram de
+6 nichos) pra publicar mídia de qualquer produto/persona em qualquer plataforma.
+
+- `M2RProduct` ganha `'m2rplace'` (decisão 2 da proposta — motivador original: o vídeo mockado
+  do TikTok Shop do M2RPlace precisa de uma fonte real de asset) e `'jack_chicken'` (empresa
+  que passa a publicar via o mesmo motor generalizado, NEXT da Central de Mídia).
+- 6 tipos de evento novos (`media_generated`, `media_approved`, `media_rejected`,
+  `media_published`, `media_publish_failed`, `media_engagement_synced`) — mesmo envelope
+  genérico da Seção 3, nenhuma mudança de formato. `product` no envelope é sempre o dono real
+  da mídia (`backfindr`, `m2rplace`, `jack_chicken`, ...), nunca um `'media-hub'` fictício
+  (decisão 4 da proposta) — proveniência de que foi a Central de Mídia quem emitiu vai em
+  `metadata`, não em `product`.
+- Nenhuma integração de produto feita nesta rodada — só formalização do pacote, seguindo o
+  mesmo padrão do v0.2.0. O primeiro emissor real é o workflow n8n generalizado do Backfindr.
