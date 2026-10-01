@@ -1,10 +1,11 @@
 # STATUS — m2r-events (schema de eventos M2R)
 Atualizado: 01/10/2026 07:40
 Prioridade no portfólio: A definir (não incluído na decisão de 01/10/2026)
-Fase: biblioteca sem deploy; master = v0.3.0 (PR #1 mergeado em 01/10/2026); m2rads fixado em v0.1.0 (493e34c)
-Objetivo atual: alinhar os consumidores ao contrato de eventos (m2rads ainda em v0.1.0; m2rintelligence com envelope próprio)
-Próximo passo exato: decidir se o m2rads sobe de v0.1.0 (493e34c) para v0.3.0: comparar `src/` de 493e34c com a master atual e listar o que muda nos tipos usados em `server/` do m2rads antes de trocar a ref no package.json
+Fase: biblioteca sem deploy; master = v0.3.0; m2rads em produção com v0.3.0 desde 01/10/2026 (merge 189c108)
+Objetivo atual: alinhar o m2rintelligence ao contrato de eventos (usa envelope próprio)
+Próximo passo exato: escrever em `docs/` um adaptador de envelope m2rintelligence (`event_id/event_type/data/occurred_at`) ↔ m2r-events (`id/type/payload/timestamp`) e propor ao Marcos antes de mexer no m2rintelligence
 Feito na última sessão:
+- 01/10: m2rads atualizado para v0.3.0 (PR m2rads#1, merge 189c108; conferido em node_modules de produção)
 - 01/10: PR #1 mergeado (merge 2379086): v0.3.0 na master
 - 01/10: m2rads fixado no commit que roda em produção (493e34c, v0.1.0, e não v0.2.0 como se supunha), merge 8193476
 - 31/08: v0.3.0 no branch `feat/media-hub-events` (produtos `m2rplace` e `jack_chicken`, 6 eventos `media_*`), build validado
