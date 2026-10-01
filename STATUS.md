@@ -1,10 +1,12 @@
 # STATUS — m2r-events (schema de eventos M2R)
-Atualizado: 01/10/2026 07:10
+Atualizado: 01/10/2026 07:40
 Prioridade no portfólio: A definir (não incluído na decisão de 01/10/2026)
-Fase: biblioteca sem deploy; v0.2.0 (`master`) em uso pelo m2rads; v0.3.0 no PR #1
-Objetivo atual: publicar a v0.3.0 (eventos da Central de Mídia) sem mudar sem querer a dependência do m2rads em produção
-Próximo passo exato: criar a tag `v0.2.0` no commit `7a13d84` e trocar no `package.json` do m2rads a dependência para `github:reencontra-tudo/m2r-events#v0.2.0`; só então Marcos decide o merge do PR #1 (https://github.com/reencontra-tudo/m2r-events/pull/1)
+Fase: biblioteca sem deploy; master = v0.3.0 (PR #1 mergeado em 01/10/2026); m2rads fixado em v0.1.0 (493e34c)
+Objetivo atual: alinhar os consumidores ao contrato de eventos (m2rads ainda em v0.1.0; m2rintelligence com envelope próprio)
+Próximo passo exato: decidir se o m2rads sobe de v0.1.0 (493e34c) para v0.3.0: comparar `src/` de 493e34c com a master atual e listar o que muda nos tipos usados em `server/` do m2rads antes de trocar a ref no package.json
 Feito na última sessão:
+- 01/10: PR #1 mergeado (merge 2379086): v0.3.0 na master
+- 01/10: m2rads fixado no commit que roda em produção (493e34c, v0.1.0, e não v0.2.0 como se supunha), merge 8193476
 - 31/08: v0.3.0 no branch `feat/media-hub-events` (produtos `m2rplace` e `jack_chicken`, 6 eventos `media_*`), build validado
 Pendências (em ordem de prioridade):
 - m2rads depende de `github:reencontra-tudo/m2r-events` sem ref: o merge do PR #1 muda a versão no próximo build do m2rads
