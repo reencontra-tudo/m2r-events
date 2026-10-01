@@ -1,6 +1,6 @@
-export type M2RProduct = 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads';
+export type M2RProduct = 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads' | 'm2rplace' | 'jack_chicken';
 export type M2RActorType = 'user' | 'system' | 'bot';
-export type M2REventType = 'lead_found' | 'lead_scored' | 'message_generated' | 'campaign_created' | 'campaign_paused' | 'campaign_action_proposed' | 'campaign_action_applied' | 'ad_metrics_synced' | 'signup' | 'subscription_started' | 'subscription_cancelled' | 'payment_received' | 'churn_detected' | 'demo_requested';
+export type M2REventType = 'lead_found' | 'lead_scored' | 'message_generated' | 'campaign_created' | 'campaign_paused' | 'campaign_action_proposed' | 'campaign_action_applied' | 'ad_metrics_synced' | 'media_generated' | 'media_approved' | 'media_rejected' | 'media_published' | 'media_publish_failed' | 'media_engagement_synced' | 'signup' | 'subscription_started' | 'subscription_cancelled' | 'payment_received' | 'churn_detected' | 'demo_requested';
 export interface M2REvent<TPayload = Record<string, unknown>> {
     /** UUID do evento */
     id: string;
@@ -64,6 +64,48 @@ export interface M2REventPayloads {
         impressions: number;
         clicks: number;
         period: string;
+    };
+    media_generated: {
+        mediaAssetId: string;
+        productSlug: string;
+        personaSlug: string | null;
+        category: string;
+        mediaType: 'image' | 'video';
+        generationSource: string;
+    };
+    media_approved: {
+        mediaAssetId: string;
+        approvedBy: string;
+    };
+    media_rejected: {
+        mediaAssetId: string;
+        rejectedBy: string;
+        motivo: string;
+    };
+    media_published: {
+        mediaAssetId: string;
+        mediaTargetId: string;
+        platform: string;
+        accountRef: string;
+        externalPostId: string;
+    };
+    media_publish_failed: {
+        mediaAssetId: string;
+        mediaTargetId: string;
+        platform: string;
+        motivo: string;
+    };
+    media_engagement_synced: {
+        mediaTargetId: string;
+        platform: string;
+        impressions: number | null;
+        reach: number | null;
+        likes: number | null;
+        comments: number | null;
+        shares: number | null;
+        clicks: number | null;
+        periodStart: string;
+        periodEnd: string;
     };
     signup: {
         userId: string;

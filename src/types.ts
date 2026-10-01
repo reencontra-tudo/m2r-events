@@ -4,7 +4,7 @@
 // tabela `events` — não existe (ainda) um coletor central. Quando a camada
 // M2R Intelligence existir, esse formato é o que ela vai consumir.
 
-export type M2RProduct = 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads';
+export type M2RProduct = 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads' | 'm2rplace' | 'jack_chicken';
 
 export type M2RActorType = 'user' | 'system' | 'bot';
 
@@ -21,6 +21,13 @@ export type M2REventType =
   | 'campaign_action_proposed'
   | 'campaign_action_applied'
   | 'ad_metrics_synced'
+  // Central de Mídia (m2r-media) — qualquer produto/persona dona de mídia pode emitir
+  | 'media_generated'
+  | 'media_approved'
+  | 'media_rejected'
+  | 'media_published'
+  | 'media_publish_failed'
+  | 'media_engagement_synced'
   // Transversais — qualquer produto pode emitir
   | 'signup'
   | 'subscription_started'
@@ -79,6 +86,36 @@ export interface M2REventPayloads {
     mode: 'dry_run' | 'live';
   };
   ad_metrics_synced: { campaignId: string; impressions: number; clicks: number; period: string };
+  media_generated: {
+    mediaAssetId: string;
+    productSlug: string;
+    personaSlug: string | null;
+    category: string;
+    mediaType: 'image' | 'video';
+    generationSource: string;
+  };
+  media_approved: { mediaAssetId: string; approvedBy: string };
+  media_rejected: { mediaAssetId: string; rejectedBy: string; motivo: string };
+  media_published: {
+    mediaAssetId: string;
+    mediaTargetId: string;
+    platform: string;
+    accountRef: string;
+    externalPostId: string;
+  };
+  media_publish_failed: { mediaAssetId: string; mediaTargetId: string; platform: string; motivo: string };
+  media_engagement_synced: {
+    mediaTargetId: string;
+    platform: string;
+    impressions: number | null;
+    reach: number | null;
+    likes: number | null;
+    comments: number | null;
+    shares: number | null;
+    clicks: number | null;
+    periodStart: string;
+    periodEnd: string;
+  };
   signup: { userId: string; email: string; origem: string };
   demo_requested: { contato: string; produto: string };
   subscription_started: { userId: string; plano: string; valor: number };
