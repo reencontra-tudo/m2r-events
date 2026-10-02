@@ -1,6 +1,6 @@
 export type M2RProduct = 'backfindr' | 'm2rleads' | 'm2rmenu' | 'm2rfood' | 'm2rads' | 'm2rplace' | 'jack_chicken';
 export type M2RActorType = 'user' | 'system' | 'bot';
-export type M2REventType = 'lead_found' | 'lead_scored' | 'message_generated' | 'campaign_created' | 'campaign_paused' | 'campaign_action_proposed' | 'campaign_action_applied' | 'ad_metrics_synced' | 'media_generated' | 'media_approved' | 'media_rejected' | 'media_published' | 'media_publish_failed' | 'media_engagement_synced' | 'signup' | 'subscription_started' | 'subscription_cancelled' | 'payment_received' | 'churn_detected' | 'demo_requested';
+export type M2REventType = 'lead_found' | 'lead_scored' | 'message_generated' | 'campaign_created' | 'campaign_paused' | 'campaign_action_proposed' | 'campaign_action_applied' | 'ad_metrics_synced' | 'media_generated' | 'media_approved' | 'media_rejected' | 'media_published' | 'media_publish_failed' | 'media_engagement_synced' | 'signup' | 'subscription_started' | 'subscription_cancelled' | 'payment_received' | 'churn_detected' | 'demo_requested' | 'auth_login_succeeded' | 'auth_login_failed' | 'auth_password_changed' | 'auth_password_reset_requested' | 'auth_impersonation_started' | 'admin_change';
 export interface M2REvent<TPayload = Record<string, unknown>> {
     /** UUID do evento */
     id: string;
@@ -135,4 +135,10 @@ export interface M2REventPayloads {
         userId: string;
         sinal: string;
     };
+    auth_login_succeeded: import('./audit.js').AuditPayloads['auth_login_succeeded'];
+    auth_login_failed: import('./audit.js').AuditPayloads['auth_login_failed'];
+    auth_password_changed: import('./audit.js').AuditPayloads['auth_password_changed'];
+    auth_password_reset_requested: import('./audit.js').AuditPayloads['auth_password_reset_requested'];
+    auth_impersonation_started: import('./audit.js').AuditPayloads['auth_impersonation_started'];
+    admin_change: import('./audit.js').AuditPayloads['admin_change'];
 }

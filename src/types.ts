@@ -34,7 +34,15 @@ export type M2REventType =
   | 'subscription_cancelled'
   | 'payment_received'
   | 'churn_detected'
-  | 'demo_requested';
+  | 'demo_requested'
+  // Auditoria (v0.4.0) — qualquer produto. Gravados primeiro na tabela local do
+  // produto; nunca levam segredo nem dado pessoal em claro (ver src/audit.ts).
+  | 'auth_login_succeeded'
+  | 'auth_login_failed'
+  | 'auth_password_changed'
+  | 'auth_password_reset_requested'
+  | 'auth_impersonation_started'
+  | 'admin_change';
 
 export interface M2REvent<TPayload = Record<string, unknown>> {
   /** UUID do evento */
@@ -122,6 +130,13 @@ export interface M2REventPayloads {
   subscription_cancelled: { userId: string; plano: string; motivo: string };
   payment_received: { userId: string; valor: number; referencia: string };
   churn_detected: { userId: string; sinal: string };
+  // Auditoria (v0.4.0) — ver AuditPayloads em src/audit.ts
+  auth_login_succeeded: import('./audit.js').AuditPayloads['auth_login_succeeded'];
+  auth_login_failed: import('./audit.js').AuditPayloads['auth_login_failed'];
+  auth_password_changed: import('./audit.js').AuditPayloads['auth_password_changed'];
+  auth_password_reset_requested: import('./audit.js').AuditPayloads['auth_password_reset_requested'];
+  auth_impersonation_started: import('./audit.js').AuditPayloads['auth_impersonation_started'];
+  admin_change: import('./audit.js').AuditPayloads['admin_change'];
 }
 
 // Checagem em tempo de compilação: todo M2REventType tem uma entrada em

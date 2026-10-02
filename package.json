@@ -1,12 +1,13 @@
 {
   "name": "m2r-events",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Schema de eventos padronizado compartilhado entre produtos M2RPrime",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "npm run build && node --test test/*.test.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

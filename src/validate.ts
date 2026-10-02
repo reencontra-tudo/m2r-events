@@ -15,9 +15,24 @@ const EVENT_TYPES: readonly M2REventType[] = [
   'payment_received',
   'churn_detected',
   'demo_requested',
+  // v0.3.0 — faltavam aqui (o validador rejeitava eventos válidos da Central de Mídia)
+  'media_generated',
+  'media_approved',
+  'media_rejected',
+  'media_published',
+  'media_publish_failed',
+  'media_engagement_synced',
+  // v0.4.0 — auditoria
+  'auth_login_succeeded',
+  'auth_login_failed',
+  'auth_password_changed',
+  'auth_password_reset_requested',
+  'auth_impersonation_started',
+  'admin_change',
 ];
 
-const PRODUCTS: readonly M2RProduct[] = ['backfindr', 'm2rleads', 'm2rmenu', 'm2rfood', 'm2rads'];
+// v0.4.0: 'm2rplace' e 'jack_chicken' existiam no tipo desde a v0.3.0 mas faltavam aqui.
+const PRODUCTS: readonly M2RProduct[] = ['backfindr', 'm2rleads', 'm2rmenu', 'm2rfood', 'm2rads', 'm2rplace', 'jack_chicken'];
 
 const ACTOR_TYPES: readonly M2RActorType[] = ['user', 'system', 'bot'];
 

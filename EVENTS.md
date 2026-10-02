@@ -1,6 +1,6 @@
 # EVENTS.md — Schema de Eventos M2RPrime
 
-**Última atualização: 31/08/2026 (v0.3.0)**
+**Última atualização: 02/10/2026 (v0.4.0, branch `feat/auditoria-v0.4.0`, sem merge)**
 
 > Fonte única de verdade do formato de eventos entre produtos M2RPrime.
 > Os tipos TypeScript em `src/types.ts` são a implementação; este arquivo é a referência de uso.
@@ -88,6 +88,26 @@ que sugira granularidade/tempo-real que a fonte de dados não tem (ver princípi
 princípio (renomeado de `media_engagement_recorded` na proposta original) — nenhuma plataforma
 de mídia social dá engajamento em tempo real por interação, só agregado por período.
 
+## 8. Auditoria (v0.4.0)
+
+Contrato comum para registro de **login** e **ações de administrador**, aprovado pelo Marcos em 02/10/2026 (Fase 1 do levantamento de logs). Implementação: `src/audit.ts`.
+
+| Tipo | Quando | Payload | Retenção |
+|---|---|---|---|
+| `auth_login_succeeded` | login aceito | `{ metodo, ipMascarado }` | acesso (6 meses) |
+| `auth_login_failed` | login recusado | `{ metodo, motivo, identificadorMascarado, identificadorHash, ipMascarado }` | acesso |
+| `auth_password_changed` | troca ou redefinição de senha | `{ metodo: 'troca'\|'redefinicao', ipMascarado }` | acesso |
+| `auth_password_reset_requested` | pedido de "esqueci a senha" | `{ identificadorMascarado, identificadorHash, ipMascarado }` | acesso |
+| `auth_impersonation_started` | admin entra como outro usuário | `{ alvoId, alvoTipo, ipMascarado }` | acesso |
+| `admin_change` | admin muda plano, preço, trial, status, configuração de pagamento… | `{ acao, recurso, recursoId, antes, depois, ipMascarado }` | comercial (5 anos); `permissao_alterada`/`usuario_*` = acesso |
+
+Regras obrigatórias:
+1. **Grava primeiro na tabela `events` do próprio produto**, com a coluna de expurgo calculada por `retentionUntil()`. Envio a coletor central é posterior.
+2. **Sem dado pessoal em claro:** `maskEmail()` + `hashIdentifier()` para o identificador; `maskIp()` para o IP. O autor é o `actorId` (id interno), nunca nome ou e-mail.
+3. **Sem segredo:** todo `payload`/`metadata` passa por `redactSecrets()` antes de gravar (chaves com nome de segredo e padrões como Bearer, JWT, URL com senha, chaves de API). Testado em `test/audit.test.mjs`.
+4. **Retenção** (`RETENTION_DAYS`): acesso 183 dias (Marco Civil, art. 15); comercial 1.827 dias (5 anos); negócio 730 dias.
+5. **Falha de auditoria nunca derruba o fluxo principal**, mas é registrada no log de erro.
+
 ## 7. Log de decisões
 
 ### 05/08/2026 — Criação do pacote
@@ -131,3 +151,10 @@ que generaliza o motor n8n do AutoPost do Backfindr (hoje hardcoded pra Facebook
   `metadata`, não em `product`.
 - Nenhuma integração de produto feita nesta rodada — só formalização do pacote, seguindo o
   mesmo padrão do v0.2.0. O primeiro emissor real é o workflow n8n generalizado do Backfindr.
+
+### 02/10/2026 — v0.4.0: auditoria (branch `feat/auditoria-v0.4.0`, sem merge)
+- 6 tipos de auditoria (`auth_*`, `admin_change`), retenção por classe, mascaramento e redação de segredos (seção 8).
+- **Correção:** o validador (`isM2REventInput`) rejeitava os 6 eventos `media_*` e os produtos `m2rplace`/`jack_chicken` desde a v0.3.0, embora existissem no tipo. Agora aceita.
+- Testes com o executor nativo do Node (`npm test`), sem dependência nova.
+- Consumidores (jack_chicken_gestao, backfindr) copiam o contrato localmente até o merge, para não depender de um branch não mergeado no build de produção.
+
