@@ -1,5 +1,5 @@
 # STATUS — m2r-events (schema de eventos M2R)
-Atualizado: 01/10/2026 07:10
+Atualizado: 02/10/2026 06:50 (padrão data + fonte aplicado aos fatos de 01/10)
 Prioridade no portfólio: A definir (não incluído na decisão de 01/10/2026)
 Fase: biblioteca sem deploy; v0.2.0 (`master`) em uso pelo m2rads; v0.3.0 no PR #1
 Objetivo atual: publicar a v0.3.0 (eventos da Central de Mídia) sem mudar sem querer a dependência do m2rads em produção
@@ -13,7 +13,7 @@ Pendências (em ordem de prioridade):
 Bloqueios / dependências externas:
 - Merge do PR #1 é ação do Marcos
 Decisões recentes (com data):
-- 01/10/2026: prioridade no portfólio = A definir (definida por Marcos)
+- 01/10/2026: prioridade no portfólio = A definir (não incluído na decisão do Marcos de 01/10/2026)
 - 25/09/2026: cofre de segredos implantado (`~/bin/cofre`)
 - 16/09/2026: cada produto grava eventos na própria tabela `events` (sem coletor central, EVENTS.md §1)
 - 30/08/2026: campo `product` = dono real da mídia; evento `media_engagement_synced`
