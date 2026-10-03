@@ -16,6 +16,7 @@ export type AuthFailureReason =
   | 'conta_inativa'
   | 'empresa_bloqueada'
   | 'conta_de_sistema'
+  | 'sem_permissao'
   | 'limite_de_tentativas'
   | 'token_invalido'
   | 'erro_interno';

@@ -1,5 +1,5 @@
 import type { M2REventType } from './types.js';
-export type AuthFailureReason = 'usuario_inexistente' | 'senha_incorreta' | 'sem_senha_cadastrada' | 'conta_inativa' | 'empresa_bloqueada' | 'conta_de_sistema' | 'limite_de_tentativas' | 'token_invalido' | 'erro_interno';
+export type AuthFailureReason = 'usuario_inexistente' | 'senha_incorreta' | 'sem_senha_cadastrada' | 'conta_inativa' | 'empresa_bloqueada' | 'conta_de_sistema' | 'sem_permissao' | 'limite_de_tentativas' | 'token_invalido' | 'erro_interno';
 export interface AuditPayloads {
     auth_login_succeeded: {
         metodo: string;
